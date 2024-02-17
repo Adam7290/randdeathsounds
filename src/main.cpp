@@ -11,8 +11,10 @@ const std::set<ghc::filesystem::path> SUPPORTED_FILE_EXTENSIONS = {
 	".wav",
 };
 
-#ifdef GEODE_IS_WINDOWS
+#if defined(GEODE_IS_WINDOWS)
 constexpr uintptr_t DEATH_SOUND_OFFSET = 0x2E6B87;
+#elif defined(GEODE_IS_ANDROID32)
+constexpr uintptr_t DEATH_SOUND_OFFSET = 0x306DA5;
 #else
 #error Undefined death sound offset for platform.
 #endif
