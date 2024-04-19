@@ -15,11 +15,10 @@ jobs:
         - name: Windows
           os: windows-latest
 
-      #   i dont have a mac
+      #   shitty bindings
       # - name: macOS
       #   os: macos-latest
 
-      #   no android support yet
       # - name: Android32
       #   os: ubuntu-latest
       #   target: Android32
@@ -40,6 +39,7 @@ jobs:
           combine: true
           build-config: RelWithDebInfo
           target: ${{ matrix.config.target }}
+          bindings: Adam7290/bindings
       
   package:
     name: Package builds
