@@ -29,16 +29,16 @@ const DeathSoundPatch DEATH_SOUND_PATCHES[] = {
         .address = 0x2E6B6F,
         .patch = "\x90\x90\x90\x90\x90",
     },
+    // TODO: Add disable stop sfx on respawn option
 
     // MenuGameLayer death
     { // NOP out playEffect call
         .address = 0x27AED4,
         .patch = "\x90\x90\x90\x90\x90",
     },
-#elif defined(GEODE_IS_ANDROID64)
-// TODO: Android64 support
+#elif defined(GEODE_IS_ANDROID)
     // PlayLayer Death
-    { // nop playEffect
+    { // NOP playEffect
         .address = 0x5BAB9C,
         .patch = "\x1F\x20\x03\xD5",
     },
@@ -52,8 +52,6 @@ const DeathSoundPatch DEATH_SOUND_PATCHES[] = {
         .address = 0x6A3138,
         .patch = "\x1F\x20\x03\xD5",
     }
-//#elif defined(GEODE_IS_ANDROID32)
-// TODO: Android32 support
 //#elif defined(GEODE_IS_MACOS)
 // TODO: MacOS support
 #else
@@ -77,16 +75,15 @@ void Patcher::setup() {
 #pragma region HOOKS
 
 // I can't be bothered to learn how to add members to bindings
-// TODO: Add member to bindings instead lol...
-const uintptr_t disableDeathSFXOffset =
+// TODO: Add m_disabledDeathSFX to bindings instead lol...
+const uintptr_t disabledDeathSFXOffset =
 #if defined(GEODE_IS_WINDOWS) 
 0x414
-#elif defined(GEODE_IS_ANDROID64)
+#elif defined(GEODE_IS_ANDROID)
 0x514
-//#elif defined(GEODE_IS_ANDROID32)
 //#elif defined(GEODE_IS_MACOS)
 #else
-#error Undefined m_disableDeathSFX offset for platform.
+#error Undefined m_disabledDeathSFX offset for platform.
 #endif
 ;
 
@@ -95,7 +92,12 @@ class $modify(PlayerObject) {
     $override void playerDestroyed(bool otherAlivePlayer) {
         PlayerObject::playerDestroyed(otherAlivePlayer);
 
-        if (!otherAlivePlayer && MBO(bool, PlayLayer::get(), disableDeathSFXOffset) == false) {
+        bool disabled = MBO(bool, PlayLayer::get(), disabledDeathSFXOffset);
+        if (Mod::get()->getSettingValue<bool>("force-play-sfx")) {
+            disabled = false;
+        }
+
+        if (!otherAlivePlayer && !disabled) {
             FMODAudioEngine::sharedEngine()->stopAllEffects(); // Since we NOPed it out...
             Randomizer::playRandomDeathSound();
         }

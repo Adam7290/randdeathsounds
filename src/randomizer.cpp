@@ -59,8 +59,17 @@ void Randomizer::loadSounds() {
 void Randomizer::playRandomDeathSound() {
     randomizeSound();
 
-    // TODO: ControllVanillaSFX support
-    FMODAudioEngine::sharedEngine()->playEffect(customDeathSound, 1, 1, GameManager::get()->m_sfxVolume);
+	float volume;
+	auto controlVanillaSFX = Loader::get()->getLoadedMod("raydeeux.controlvanillasfx");
+	if (controlVanillaSFX && controlVanillaSFX->getSettingValue<bool>("enabled")) {
+		volume = controlVanillaSFX->getSettingValue<int64_t>("volume") / 100.0f;
+		volume *= controlVanillaSFX->getSettingValue<double>("volumeBoost");
+	}
+	else {
+		volume = GameManager::get()->m_sfxVolume;
+	}
+
+    FMODAudioEngine::sharedEngine()->playEffect(customDeathSound, 1, 1, volume);
 }
 
 bool Randomizer::isValidExtension(const std::string &filePath) {

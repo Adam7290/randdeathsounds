@@ -1,3 +1,3 @@
 # Death Sound Randomizer
 
-Death sound randomizer from mhv5 made in geode
+Adds random death sounds and other tweaks related to death sounds

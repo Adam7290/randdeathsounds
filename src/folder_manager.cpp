@@ -16,7 +16,7 @@ void Folder::setup() {
     // FIX MY STUPID FOLDER LOCATION!!! LOL!!!!!!!!!
     if (fs::exists(legacyFolder) && !fs::exists(folder)) {
         std::error_code err;
-        fs::copy(legacyFolder, folder, err);
+        fs::copy(legacyFolder, folder, err); // Can't simply fs::rename the folder to a new location in case the new location is on another filesystem
         if (!err) {
             fs::remove_all(legacyFolder);
             log::info("Successfully moved deathsounds folder from {} to {}", legacyFolder, folder);
