@@ -92,6 +92,8 @@ class $modify(PlayerObject) {
     $override void playerDestroyed(bool otherAlivePlayer) {
         PlayerObject::playerDestroyed(otherAlivePlayer);
 
+        if (PlayLayer::get() == nullptr) { return; }
+
         bool disabled = MBO(bool, PlayLayer::get(), disabledDeathSFXOffset);
         if (Mod::get()->getSettingValue<bool>("force-play-sfx")) {
             disabled = false;
