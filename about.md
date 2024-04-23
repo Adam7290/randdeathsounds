@@ -22,4 +22,4 @@ Report bugs or suggest features on the github repo
 - Maybe a custom index for sounds? [ ]
 
 ## Credits
-- Erymanthus for testing and finding bugs!
+- Erymanthus for testing, finding bugs, and some contributions!
