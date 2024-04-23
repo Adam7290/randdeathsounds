@@ -20,3 +20,6 @@ Report bugs or suggest features on the github repo
 - Android support [ ]
 - MacOS support [ ]
 - Maybe a custom index for sounds? [ ]
+
+## Credits
+- Erymanthus for testing and finding bugs!
