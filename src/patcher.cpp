@@ -122,7 +122,7 @@ class $modify(PlayerObject) {
             disabled = false;
         }
 
-        if ((!otherPlayer || pl->m_level->m_twoPlayerMode) && !disabled) {
+        if (!(this == pl->m_player2 && pl->m_level->m_twoPlayerMode) && !disabled) {
             FMODAudioEngine::sharedEngine()->stopAllEffects(); // Since we NOPed it out...
             Randomizer::playRandomDeathSound();
         }
