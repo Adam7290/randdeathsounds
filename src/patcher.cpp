@@ -55,10 +55,20 @@ static const DeathSoundPatch DEATH_SOUND_PATCHES[] = {
 
 #elif defined(GEODE_IS_ANDROID32) 
     // PlayLayer death
-    // { // NOP playEffect
-    //     .address = 0x306DBE,
-    //     .patch = "00 BF 00 BF"
-    // }
+    { // NOP playEffect
+        .address = 0x306DBE,
+        .patch = "00 BF 00 BF",
+    },
+    { // NOP stopAllEffects
+        .address = 0x306D8E,
+        .patch = "00 BF 00 BF",
+    },
+
+    // MenuGameLayer death
+    { // NOP playEffect
+        .address = 0x39447E,
+        .patch = "00 BF 00 BF",
+    }
 
     // MenuGameLayer death
 // TODO: Finish android32 support
@@ -101,10 +111,8 @@ static const uintptr_t disabledDeathSFXOffset =
 
 #include <Geode/modify/PlayerObject.hpp>
 class $modify(PlayerObject) {
-    $override void playerDestroyed(bool otherAlivePlayer) {
-        PlayerObject::playerDestroyed(otherAlivePlayer);
-
-        log::info("TESTTESTTEST: {}", otherAlivePlayer);
+    $override void playerDestroyed(bool otherPlayer) {
+        PlayerObject::playerDestroyed(otherPlayer);
 
         if (PlayLayer::get() == nullptr) { return; }
 
@@ -113,7 +121,7 @@ class $modify(PlayerObject) {
             disabled = false;
         }
 
-        if (!otherAlivePlayer && !disabled) {
+        if (!otherPlayer && !disabled) {
             FMODAudioEngine::sharedEngine()->stopAllEffects(); // Since we NOPed it out...
             Randomizer::playRandomDeathSound();
         }
