@@ -114,14 +114,15 @@ class $modify(PlayerObject) {
     $override void playerDestroyed(bool otherPlayer) {
         PlayerObject::playerDestroyed(otherPlayer);
 
-        if (PlayLayer::get() == nullptr) { return; }
+        auto pl = PlayLayer::get();
+        if (pl == nullptr) { return; }
 
-        bool disabled = MBO(bool, PlayLayer::get(), disabledDeathSFXOffset);
+        bool disabled = MBO(bool, pl, disabledDeathSFXOffset);
         if (Mod::get()->getSettingValue<bool>("force-play-sfx")) {
             disabled = false;
         }
 
-        if (!otherPlayer && !disabled) {
+        if ((!otherPlayer || pl->m_level->m_twoPlayerMode) && !disabled) {
             FMODAudioEngine::sharedEngine()->stopAllEffects(); // Since we NOPed it out...
             Randomizer::playRandomDeathSound();
         }
