@@ -11,6 +11,7 @@ add_library(${PROJECT_NAME} SHARED
     src/folder_manager.cpp
     src/patcher.cpp
     src/randomizer.cpp
+    src/util.cpp
 )
 
 if (NOT DEFINED ENV{GEODE_SDK})

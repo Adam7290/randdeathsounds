@@ -11,47 +11,57 @@ using namespace geode::prelude;
 
 struct DeathSoundPatch {
     uintptr_t address;
-    const char* patch; // NULL terminated
+    const char* patch;
 };
 
-const DeathSoundPatch DEATH_SOUND_PATCHES[] = {
+static const DeathSoundPatch DEATH_SOUND_PATCHES[] = {
 #if defined(GEODE_IS_WINDOWS)
     // PlayLayer death
     // { // NOP out call to playEffect
     //     .address = 0x2E6BBA,
-    //     .patch = "\x90\x90\x90\x90\x90",
+    //     .patch = "90 90 90 90 90",
     // },
     { // For some reason I cant nop the playEffect call so I replace JNZ with JMP in if(this->m_disabledDeathSFX) statement to unconditionally skip playEffect for now.
         .address = 0x2E6B7B,
-        .patch = "\xEB",
+        .patch = "EB",
     },
     { // NOP out stopAllEffects so we can manually call it after playing our death sound
         .address = 0x2E6B6F,
-        .patch = "\x90\x90\x90\x90\x90",
+        .patch = "90 90 90 90 90",
     },
     // TODO: Add disable stop sfx on respawn option
 
     // MenuGameLayer death
     { // NOP out playEffect call
         .address = 0x27AED4,
-        .patch = "\x90\x90\x90\x90\x90",
+        .patch = "90 90 90 90 90",
     },
-#elif defined(GEODE_IS_ANDROID)
+#elif defined(GEODE_IS_ANDROID64)
     // PlayLayer Death
     { // NOP playEffect
         .address = 0x5BAB9C,
-        .patch = "\x1F\x20\x03\xD5",
+        .patch = "1F 20 03 D5",
     },
     { // NOP out stopAllEffects
         .address = 0x5BAB5C,
-        .patch =  "\x1F\x20\x03\xD5",
+        .patch = "1F 20 03 D5",
     },
 
     // MenuGameLayer death
     { // NOP out playEffect call
         .address = 0x6A3138,
-        .patch = "\x1F\x20\x03\xD5",
+        .patch = "1F 20 03 D5",
     }
+
+#elif defined(GEODE_IS_ANDROID32) 
+    // PlayLayer death
+    // { // NOP playEffect
+    //     .address = 0x306DBE,
+    //     .patch = "00 BF 00 BF"
+    // }
+
+    // MenuGameLayer death
+// TODO: Finish android32 support
 //#elif defined(GEODE_IS_MACOS)
 // TODO: MacOS support
 #else
@@ -63,7 +73,7 @@ void Patcher::setup() {
     for (const DeathSoundPatch& patch : DEATH_SOUND_PATCHES) {
         if(Mod::get()->patch(
             reinterpret_cast<void*>(geode::base::get() + patch.address),
-            ByteVector(patch.patch, patch.patch + std::strlen(patch.patch))
+            Util::patchToBytes(patch.patch)
         ).isErr()) {
             log::error("Failed to patch: 0x{:X}", patch.address);
         }
@@ -76,11 +86,13 @@ void Patcher::setup() {
 
 // I can't be bothered to learn how to add members to bindings
 // TODO: Add m_disabledDeathSFX to bindings instead lol...
-const uintptr_t disabledDeathSFXOffset =
+static const uintptr_t disabledDeathSFXOffset =
 #if defined(GEODE_IS_WINDOWS) 
 0x414
-#elif defined(GEODE_IS_ANDROID)
+#elif defined(GEODE_IS_ANDROID64)
 0x514
+#elif defined(GEODE_IS_ANDROID32)
+0x414
 //#elif defined(GEODE_IS_MACOS)
 #else
 #error Undefined m_disabledDeathSFX offset for platform.
@@ -91,6 +103,8 @@ const uintptr_t disabledDeathSFXOffset =
 class $modify(PlayerObject) {
     $override void playerDestroyed(bool otherAlivePlayer) {
         PlayerObject::playerDestroyed(otherAlivePlayer);
+
+        log::info("TESTTESTTEST: {}", otherAlivePlayer);
 
         if (PlayLayer::get() == nullptr) { return; }
 
