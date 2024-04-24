@@ -111,18 +111,19 @@ static const uintptr_t disabledDeathSFXOffset =
 
 #include <Geode/modify/PlayerObject.hpp>
 class $modify(PlayerObject) {
-    $override void playerDestroyed(bool otherPlayer) {
-        PlayerObject::playerDestroyed(otherPlayer);
+    $override void playerDestroyed(bool p0) {
+        PlayerObject::playerDestroyed(p0);
 
-        auto pl = PlayLayer::get();
-        if (pl == nullptr) { return; }
+        auto playLayer = PlayLayer::get();
+        if (playLayer == nullptr) { return; }
 
-        bool disabled = MBO(bool, pl, disabledDeathSFXOffset);
+        bool disabled = MBO(bool, playLayer, disabledDeathSFXOffset);
         if (Mod::get()->getSettingValue<bool>("force-play-sfx")) {
             disabled = false;
         }
 
-        if (!(this == pl->m_player2 && pl->m_level->m_twoPlayerMode) && !disabled) {
+        // Can't use p0 because of some stupid mod incompat
+        if (!(this == playLayer->m_player2 && playLayer->m_level->m_twoPlayerMode) && !disabled) {
             FMODAudioEngine::sharedEngine()->stopAllEffects(); // Since we NOPed it out...
             Randomizer::playRandomDeathSound();
         }
