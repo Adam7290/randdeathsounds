@@ -16,8 +16,8 @@ Report bugs or suggest features on the github repo
 .mp3
 
 ## Roadmap
-#### [ ] = undetermined [x] = done [-] = not adding
-- Android support [ ]
+#### [ ] = undetermined | [x] = done | [-] = not adding
+- Android support [x]
 - MacOS support [ ]
 - Maybe a custom index for sounds? [ ]
 
