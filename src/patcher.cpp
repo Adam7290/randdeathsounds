@@ -29,7 +29,12 @@ static const DeathSoundPatch DEATH_SOUND_PATCHES[] = {
         .address = 0x2E6B6F,
         .patch = "90 90 90 90 90",
     },
-    // TODO: Add disable stop sfx on respawn option
+    
+    // PlayLayer resetLevel
+    { // NOP stopAllEffects
+        .address = 0x2EA179,
+        .patch = "90 90 90 90 90",
+    },
 
     // MenuGameLayer death
     { // NOP out playEffect call
@@ -47,13 +52,19 @@ static const DeathSoundPatch DEATH_SOUND_PATCHES[] = {
         .patch = "1F 20 03 D5",
     },
 
+    // PlayLayer resetLevel
+    {
+        .address = 0x5CC8D0,
+        .patch = "1F 20 03 D5",
+    },
+
     // MenuGameLayer death
     { // NOP out playEffect call
         .address = 0x6A3138,
         .patch = "1F 20 03 D5",
     }
 
-#elif defined(GEODE_IS_ANDROID32) 
+#elif defined(GEODE_IS_ANDROID32)
     // PlayLayer death
     { // NOP playEffect
         .address = 0x306DBE,
@@ -64,14 +75,17 @@ static const DeathSoundPatch DEATH_SOUND_PATCHES[] = {
         .patch = "00 BF 00 BF",
     },
 
+    // PlayLayer resetLevel
+    {
+        .address = 0x31073E,
+        .patch = "00 BF 00 BF",
+    },
+
     // MenuGameLayer death
     { // NOP playEffect
         .address = 0x39447E,
         .patch = "00 BF 00 BF",
     }
-
-    // MenuGameLayer death
-// TODO: Finish android32 support
 //#elif defined(GEODE_IS_MACOS)
 // TODO: MacOS support
 #else
@@ -127,6 +141,19 @@ class $modify(PlayerObject) {
             FMODAudioEngine::sharedEngine()->stopAllEffects(); // Since we NOPed it out...
             Randomizer::playRandomDeathSound();
         }
+    }
+};
+
+#include <Geode/modify/PlayLayer.hpp>
+class $modify(PlayLayer) {
+    $override void resetLevel() {
+        if (Mod::get()->getSettingValue<bool>("stop-sfx-on-respawn")) {
+            // Bug (that I'm hoping no one will notice):
+            // If you play a sound after a player dies with this option off it won't stop on respawn
+            FMODAudioEngine::sharedEngine()->stopAllEffects();
+        }
+
+        PlayLayer::resetLevel();
     }
 };
 

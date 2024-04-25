@@ -25,7 +25,12 @@
 			"description": "Plays death sfx even when an options trigger disables it.",
 			"type": "bool",
 			"default": false
-		}
+		},
+		"stop-sfx-on-respawn": {
+            "name": "Stop Death SFX on Respawn",
+            "type": "bool",
+            "default": true
+        }
 	},
 	"incompatibilities": [
 		{
