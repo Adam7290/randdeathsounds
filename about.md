@@ -1,8 +1,7 @@
 # Death Sound Randomizer
 Adds random death sounds and other tweaks related to death sounds (see settings)
 
-Report bugs or request features on my discord server: https://discord.gg/7UEZXkVm52 \
-If its **minor** just ping me on the Geode SDK server :)
+Report bugs or request features on my discord server: https://discord.gg/7UEZXkVm52 or ping me on the GeodeSDK server, I don't really care just don't make github issues.
 
 # FOLDER LOCATION
 #### Click the pencil icon next to the mod's settings.
