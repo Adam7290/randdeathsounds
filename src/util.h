@@ -5,4 +5,7 @@
 
 namespace Util {
     geode::ByteVector patchToBytes(const char* patch);
+
+    // Combine 2 hashes together
+    unsigned long hash2(unsigned long hash1, unsigned long hash2);
 }

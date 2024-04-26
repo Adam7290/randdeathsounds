@@ -1,5 +1,6 @@
 #include "randomizer.h"
 #include "folder_manager.h"
+#include "util.h"
 #include <random>
 
 using namespace geode::prelude;
@@ -8,6 +9,7 @@ const char* DEFAULT_DEATH_SOUND = "explode_11.ogg";
 
 gd::string customDeathSound = DEFAULT_DEATH_SOUND;
 std::vector<gd::string> soundPool;
+unsigned long poolHash = 0; // Used to detect when to reload sounds
 std::mt19937 rng;
 
 // Reload sounds when entering a level
@@ -46,11 +48,28 @@ void Randomizer::randomizeSound() {
 }
 
 void Randomizer::loadSounds() {
+	// Hash all the sound paths and last modified timestamps to detect when to reload sounds
+	unsigned int oldHash = poolHash;
+	poolHash = 0;
+
 	soundPool.clear();
 	for (const auto& file : fs::directory_iterator(Folder::getFolder())) {
 		if (isValidExtension(file.path().extension().string())) {
 			gd::string sound = file.path().string();
 			soundPool.push_back(sound);
+
+			poolHash = Util::hash2(poolHash, geode::utils::hash(sound.c_str()));
+			poolHash = Util::hash2(poolHash, fs::last_write_time(file).time_since_epoch().count());
+		}
+	}
+
+	if (poolHash != oldHash) {
+		if (oldHash != 0) { // Check that we are actually "reloading" death sounds and not loading for the first time
+			log::info("Reloading death sounds!");
+		}
+
+		// Reload effects
+		for (auto& sound : soundPool) {
 			FMODAudioEngine::sharedEngine()->preloadEffect(sound);
 		}
 	}

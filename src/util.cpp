@@ -18,3 +18,7 @@ ByteVector Util::patchToBytes(const char* patch) {
 
     return bytes;
 }
+
+unsigned long Util::hash2(unsigned long hash1, unsigned long hash2) {
+    return 5345567981 * hash1 + hash2;
+}
