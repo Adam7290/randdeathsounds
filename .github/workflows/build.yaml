@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "master"
+      - "**"
 
 jobs:
   build:
@@ -40,6 +40,7 @@ jobs:
           build-config: RelWithDebInfo
           target: ${{ matrix.config.target }}
           bindings: Adam7290/bindings
+          export-pdb: true
       
   package:
     name: Package builds
