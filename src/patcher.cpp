@@ -136,8 +136,7 @@ class $modify(PlayerObject) {
             disabled = false;
         }
 
-        // Can't use p0 because of some stupid mod incompat
-        if (!(this == playLayer->m_player2 && playLayer->m_level->m_twoPlayerMode) && !disabled) {
+        if (!p0 && !disabled) {
             FMODAudioEngine::sharedEngine()->stopAllEffects(); // Since we NOPed it out...
             Randomizer::playRandomDeathSound();
         }
