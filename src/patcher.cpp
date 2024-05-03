@@ -125,8 +125,8 @@ static const uintptr_t disabledDeathSFXOffset =
 
 #include <Geode/modify/PlayerObject.hpp>
 class $modify(PlayerObject) {
-    $override void playerDestroyed(bool p0) {
-        PlayerObject::playerDestroyed(p0);
+    $override void playerDestroyed(bool otherPlayer) {
+        PlayerObject::playerDestroyed(otherPlayer);
 
         auto playLayer = PlayLayer::get();
         if (playLayer == nullptr) { return; }
@@ -136,7 +136,7 @@ class $modify(PlayerObject) {
             disabled = false;
         }
 
-        if (!p0 && !disabled) {
+        if (!otherPlayer && !disabled) {
             FMODAudioEngine::sharedEngine()->stopAllEffects(); // Since we NOPed it out...
             Randomizer::playRandomDeathSound();
         }
